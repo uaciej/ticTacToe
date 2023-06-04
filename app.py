@@ -47,7 +47,9 @@ def logout():
 
 @app.route('/play', methods=['GET', 'POST'])
 def play():
-    pass
+    if request.method == 'POST':
+        pass
+    return render_template('play.html')
     
 
 if __name__ == '__main__':
