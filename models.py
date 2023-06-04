@@ -7,7 +7,7 @@ db = SQLAlchemy()
 class Player(db.Model):
     __tablename__ = 'players'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(10), nullable=False)
+    name = db.Column(db.String(10), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     credits = db.Column(db.Integer, default=0)
     games = db.relationship('Game', backref='player', lazy=True)

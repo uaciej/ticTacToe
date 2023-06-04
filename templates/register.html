@@ -3,11 +3,15 @@
 
 <head>
     <title>Tic Tac Toe - Register</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
     <h1>Register</h1>
-    <form method="POST" action="{{ url_for('register') }}">
+    {% if error_message %}
+    <p class="error_message">{{ error_message }}</p>
+    {% endif %}
+    <form method="POST" act ion="{{ url_for('register') }}">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
         <label for="password">Password:</label>

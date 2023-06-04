@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from models import db, Player
+from sqlalchemy.exc import IntegrityError
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/ttt'
@@ -8,6 +10,7 @@ app.secret_key = 'ttt'
 app.static_folder = 'static'
 
 db.init_app(app)
+migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
 
@@ -17,15 +20,22 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    error_message = None
+
     if request.method == 'POST':
         name = request.form['name']
         password = request.form['password']
         player = Player(name=name)
         player.set_password(password)
-        db.session.add(player)
-        db.session.commit()
-        return redirect(url_for('login'))
-    return render_template('register.html')
+        try:
+            db.session.add(player)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            error_message = 'Name already exists'
+            return render_template('register.html', error_message=error_message)
+
+    return render_template('register.html', error_message=error_message)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
