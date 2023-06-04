@@ -12,14 +12,14 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    return 'Welcome to Tic Tac Toe!'
+    return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
+        name = request.form['name']
         password = request.form['password']
-        player = Player(name=username)
+        player = Player(name=name)
         player.set_password(password)
         db.session.add(player)
         db.session.commit()
@@ -29,9 +29,9 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        name = request.form['name']
         password = request.form['password']
-        player = Player.query.filter_by(name=username).first()
+        player = Player.query.filter_by(name=name).first()
         if player and player.check_password(password):
             session['player_id'] = player.id
             return redirect(url_for('index'))
@@ -47,6 +47,8 @@ def logout():
 
 @app.route('/play', methods=['GET', 'POST'])
 def play():
+    if 'player_id' not in session:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         pass
     return render_template('play.html')
