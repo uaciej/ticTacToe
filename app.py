@@ -44,6 +44,10 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+@app.route('/play', methods=['GET', 'POST'])
+def play():
+    pass
     
 
 if __name__ == '__main__':
