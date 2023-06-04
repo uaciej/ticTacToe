@@ -13,10 +13,10 @@ class Player(db.Model):
     games = db.relationship('Game', backref='player', lazy=True)
 
     def set_password(self, password):
-        self.password = pbkdf2_sha256.hash(password)
+        self.password_hash = pbkdf2_sha256.hash(password)
 
     def check_password(self, password):
-        return pbkdf2_sha256.verify(password, self.password)
+        return pbkdf2_sha256.verify(password, self.password_hash)
     
 class Game(db.Model):
     __tablename__ = 'games'
