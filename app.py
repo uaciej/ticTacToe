@@ -5,6 +5,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/ttt'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'ttt'
+app.static_folder = 'static'
 
 db.init_app(app)
 with app.app_context():
@@ -28,6 +29,8 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error_message = None
+
     if request.method == 'POST':
         name = request.form['name']
         password = request.form['password']
@@ -36,8 +39,9 @@ def login():
             session['player_id'] = player.id
             return redirect(url_for('index'))
         else:
-            return redirect(url_for('login'))
-    return render_template('login.html')
+            error_message = 'Invalid username or password'
+
+    return render_template('login.html', error_message=error_message)
     
 
 @app.route('/logout')
