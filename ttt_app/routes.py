@@ -1,24 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from models import db, Player
+from flask import render_template, request, redirect, url_for, session
+from .models import Player, db
 from sqlalchemy.exc import IntegrityError
-from flask_migrate import Migrate
-from flask_socketio import SocketIO, emit
-from game_logic import TTTGame
+from ttt_app import app
 
-app = Flask(__name__)
-socketio = SocketIO(app)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/ttt'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'ttt'
-app.static_folder = 'static'
-
-db.init_app(app)
-migrate = Migrate(app, db)
-with app.app_context():
-    db.create_all()
-
-GAME = None
 
 @app.route('/')
 def index():
@@ -73,22 +57,3 @@ def play():
         pass
     return render_template('play.html')
 
-@socketio.on('game_start')
-def handle_game_start():
-    global GAME
-    GAME = TTTGame()
-    emit('move', {'board': GAME.board, 'game_over': GAME.game_over, 'winner': GAME.winner}, broadcast=True)
-
-@socketio.on('make_move')
-def handle_make_move(data):
-    row = data['row']
-    col = data['col']
-
-    GAME.make_move(row, col)
-
-    emit('move', {'board': GAME.board}, broadcast=True)
-
-       
-
-if __name__ == '__main__':
-    socketio.run(app)

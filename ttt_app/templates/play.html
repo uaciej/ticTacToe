@@ -6,26 +6,22 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
     <link rel="stylesheet" href="/static/styles.css">
     <script>
-        const socket = io.connect()
+        var socket = io.connect()
 
         socket.emit('game_start');
 
         socket.on('move', (data) => {
             const board = data.board;
             updateBoard(board);
+            console.log(data);
             if (data.game_over) {
-                socket.emit('game_over', { winner: data.winner });
+                console.log('game over');
+                socket.emit('game_over', { 'winner': data.winner });
             }
         });
 
-        socket.on('game_over', (result) => {
-            if (result === 'X') {
-                console.log("You Won");
-            } else if (result === 'O') {
-                console.log("You Lost");
-            } else {
-                console.log("Tie");
-            }
+        socket.on('result', (data) => {
+            console.log(data.winner);
         });
 
     </script>
