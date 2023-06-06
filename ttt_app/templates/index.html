@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+</head>
+
+<body>
+    <h1>Welcome to Tic Tac Toe!</h1>
+    <div>
+        {% if not session.player_id %}
+        <button onclick="location.href='/login'">Login</button>
+        <button onclick="location.href='/register'">Register</button>
+        {% else %}
+        <button onclick="location.href='/play'">Play</button>
+        <button onclick="location.href='/logout'">Logout</button>
+        {% endif %}
+    </div>
+</body>
+
+</html>

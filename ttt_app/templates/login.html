@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tic Tac Toe - Login</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <h1>Login</h1>
+    {% if error_message %}
+    <p class="error_message">{{ error_message }}</p>
+    {% endif %}
+    <form method="POST" action="{{ url_for('login') }}">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <input type="submit" value="Login">
+    </form>
+
+    <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+</body>
+
+
+
+</html>
