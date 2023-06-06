@@ -17,11 +17,26 @@
             if (data.game_over) {
                 console.log('game over');
                 socket.emit('game_over', { 'winner': data.winner });
+                var playAgainBtn = document.getElementById('playAgainBtn');
+                playAgainBtn.style.display = 'block'
             }
         });
 
         socket.on('result', (data) => {
-            console.log(data.winner);
+            const winner = data.winner;
+            let message;
+
+            if (winner === 'X') {
+                message = 'You won!';
+            } else if (winner === 'O') {
+                message = 'You lost!';
+            } else {
+                message = 'It\'s a tie!';
+            }
+
+            // Display the message
+            const resultDiv = document.getElementById('message');
+            resultDiv.textContent = message;
         });
 
     </script>
@@ -29,6 +44,7 @@
 
 <body>
     <h1>Play Tic Tac Toe</h1>
+    <div id="message"></div>
     <div class="board">
         <script>
             function updateBoard(board) {
@@ -52,7 +68,9 @@
             }
         </script>
     </div>
-
+    <div id="play_again">
+        <button onclick="location.href='/play'" id="playAgainBtn" style="display: none;">Play Again</button>
+    </div>
 </body>
 
 </html>
