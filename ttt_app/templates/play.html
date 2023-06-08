@@ -27,15 +27,19 @@
 <script>
     var socket = io.connect()
     var isGameOver = false;
+
+    //Buttons
     var playAgainBtn = document.getElementById('playAgainBtn');
     var startNewSessionBtn = document.getElementById('startNewSessionBtn');
     var addCreditsBtn = document.getElementById('addCreditsBtn');
 
+    //Messages
     var sessionOverDiv = document.getElementById('session_message');
     var resultDiv = document.getElementById('message');
     var playerCreditsElement = document.getElementById('player_credits');
 
 
+    //Socket events
     socket.emit('game_start');
 
     socket.on('move', (data) => {
@@ -43,7 +47,7 @@
         const board = data.board;
         var credits = data.credits;
         updateBoard(board);
-        console.log(data, credits);
+        console.log(data);
         if (data.game_over) {
             isGameOver = true;
             console.log('game over');
@@ -94,12 +98,14 @@
     });
 
 
+    //Functions
     function addCredits() {
         socket.emit('add_credits');
     };
 
     function startNewSession() {
         console.log('start new session');
+        isGameOver = false;
         sessionOverDiv.textContent = '';
         startNewSessionBtn.style.display = 'none';
         socket.emit('start_new_session');
