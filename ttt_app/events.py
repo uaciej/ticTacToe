@@ -30,7 +30,6 @@ def handle_make_move(data):
 
 @socketio.on('game_over')
 def handle_game_over(data):
-    player = session['player']
     if data['winner'] == 'X':
         player = Player.query.filter_by(id=session['player_id']).first()
         player.credits += 4
