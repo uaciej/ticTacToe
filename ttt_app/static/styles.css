@@ -23,4 +23,30 @@ body {
     justify-content: center;
     font-size: 60px;
     cursor: pointer;
-  }
+}
+
+#message {
+    color: red;
+    position: fixed;
+    top: 225px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+    font-size: 100px;
+}
+
+#session_message {
+    color: red;
+    position: fixed;
+    top: 250px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+    font-size: 50px;
+}
+
+#game_button {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}

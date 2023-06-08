@@ -5,54 +5,127 @@
     <title>Play Tic Tac Toe</title>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
     <link rel="stylesheet" href="/static/styles.css">
-    <script>
-        var socket = io.connect()
-
-        socket.emit('game_start');
-
-        socket.on('move', (data) => {
-            const board = data.board;
-            updateBoard(board);
-            console.log(data);
-            if (data.game_over) {
-                console.log('game over');
-                socket.emit('game_over', { 'winner': data.winner });
-            }
-        });
-
-        socket.on('result', (data) => {
-            console.log(data.winner);
-        });
-
-    </script>
 </head>
 
 <body>
     <h1>Play Tic Tac Toe</h1>
-    <div class="board">
-        <script>
-            function updateBoard(board) {
-                const boardContainer = document.querySelector('.board');
-                boardContainer.innerHTML = '';
-                for (let row = 0; row < 3; row++) {
-                    for (let col = 0; col < 3; col++) {
-                        const cell = document.createElement('div');
-                        cell.className = 'cell';
-                        cell.dataset.row = row;
-                        cell.dataset.col = col;
-                        cell.textContent = board[row][col];
-                        cell.addEventListener('click', () => handleCellClick(row, col));
-                        boardContainer.appendChild(cell);
-                    }
-                }
-            }
-
-            function handleCellClick(row, col) {
-                socket.emit('make_move', { row, col });
-            }
-        </script>
+    <div id="player_credits"></div>
+    <div id="message"></div>
+    <div id="session_message"></div>
+    <div class="board"></div>
+    <div id="game_button">
+        <button onclick="location.href='/play'" id="playAgainBtn" style="display: none;">Play Again</button>
     </div>
-
+    <div id="game_button">
+        <button onclick="addCredits()" id="addCreditsBtn" style="display: none;">Add 10 Credits</button>
+    </div>
+    <div id="game_button">
+        <button onclick="startNewSession()" id="startNewSessionBtn" style="display: none;">Start New Session</button>
+    </div>
 </body>
+
+<script>
+    var socket = io.connect()
+    var isGameOver = false;
+    var playAgainBtn = document.getElementById('playAgainBtn');
+    var startNewSessionBtn = document.getElementById('startNewSessionBtn');
+    var addCreditsBtn = document.getElementById('addCreditsBtn');
+
+    var sessionOverDiv = document.getElementById('session_message');
+    var resultDiv = document.getElementById('message');
+    var playerCreditsElement = document.getElementById('player_credits');
+
+
+    socket.emit('game_start');
+
+    socket.on('move', (data) => {
+        playerCreditsElement.innerHTML = data.credits + ' Credits';
+        const board = data.board;
+        var credits = data.credits;
+        updateBoard(board);
+        console.log(data, credits);
+        if (data.game_over) {
+            isGameOver = true;
+            console.log('game over');
+            socket.emit('game_over', { 'winner': data.winner });
+        }
+    });
+
+    socket.on('not_enough_credits', (data) => {
+        sessionOverDiv.textContent = 'Not enough credits. You lost the session.'
+        startNewSessionBtn.style.display = 'block'
+    });
+
+
+    socket.on('result', (data) => {
+        console.log(data);
+        const winner = data.winner;
+        let message;
+        playerCreditsElement.innerHTML = data.credits + ' Credits';
+
+        if (winner === 'X') {
+            message = 'You won!';
+        } else if (winner === 'O') {
+            message = 'You lost!';
+        } else {
+            message = 'It\'s a tie!';
+        }
+
+        if (data.credits == 0) {
+            addCreditsBtn.style.display = 'block'
+        }
+        else if (data.credits == 15) {
+            sessionOverDiv.textContent = 'You won the session!';
+            message = '';
+            startNewSessionBtn.style.display = 'block'
+        }
+        else {
+            playAgainBtn.style.display = 'block'
+        }
+
+        // Display the message
+        resultDiv.textContent = message;
+    });
+
+    socket.on('credits_added', (data) => {
+        addCreditsBtn.style.display = 'none';
+        playAgainBtn.style.display = 'block';
+        playerCreditsElement.innerHTML = data.credits + ' Credits';
+    });
+
+
+    function addCredits() {
+        socket.emit('add_credits');
+    };
+
+    function startNewSession() {
+        console.log('start new session');
+        sessionOverDiv.textContent = '';
+        startNewSessionBtn.style.display = 'none';
+        socket.emit('start_new_session');
+    }
+
+    function updateBoard(board) {
+        const boardContainer = document.querySelector('.board');
+        boardContainer.innerHTML = '';
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                cell.textContent = board[row][col];
+                cell.addEventListener('click', () => handleCellClick(row, col));
+                boardContainer.appendChild(cell);
+            }
+        }
+    }
+
+    function handleCellClick(row, col) {
+        if (isGameOver === false) {
+            socket.emit('make_move', { row, col });
+        }
+    }
+</script>
 
 </html>
