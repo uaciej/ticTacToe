@@ -9,6 +9,7 @@
 
 <body>
     <h1>Play Tic Tac Toe</h1>
+    <div id="player_credits"></div>
     <div id="message"></div>
     <div id="session_message"></div>
     <div class="board"></div>
@@ -32,11 +33,13 @@
 
     var sessionOverDiv = document.getElementById('session_message');
     var resultDiv = document.getElementById('message');
+    var playerCreditsElement = document.getElementById('player_credits');
 
 
     socket.emit('game_start');
 
     socket.on('move', (data) => {
+        playerCreditsElement.innerHTML = data.credits + ' Credits';
         const board = data.board;
         var credits = data.credits;
         updateBoard(board);
@@ -58,6 +61,7 @@
         console.log(data);
         const winner = data.winner;
         let message;
+        playerCreditsElement.innerHTML = data.credits + ' Credits';
 
         if (winner === 'X') {
             message = 'You won!';
@@ -70,6 +74,11 @@
         if (data.credits == 0) {
             addCreditsBtn.style.display = 'block'
         }
+        else if (data.credits == 15) {
+            sessionOverDiv.textContent = 'You won the session!';
+            message = '';
+            startNewSessionBtn.style.display = 'block'
+        }
         else {
             playAgainBtn.style.display = 'block'
         }
@@ -81,6 +90,7 @@
     socket.on('credits_added', (data) => {
         addCreditsBtn.style.display = 'none';
         playAgainBtn.style.display = 'block';
+        playerCreditsElement.innerHTML = data.credits + ' Credits';
     });
 
 

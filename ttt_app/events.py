@@ -47,7 +47,7 @@ def add_credits():
     player = Player.query.filter_by(id=session['player_id']).first()
     player.credits = 10
     db.session.commit()
-    emit('credits_added', {'message': 'Credits added', 'success': True}, broadcast=True)
+    emit('credits_added', {'message': 'Credits added', 'success': True, 'credits': player.credits}, broadcast=True)
 
 @socketio.on('start_new_session')
 def start_new_session():
