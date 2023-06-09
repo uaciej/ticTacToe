@@ -8,7 +8,7 @@ import time
 
 @socketio.on('game_start')
 def handle_game_start():
-    game = session['game'] = TTTGame() 
+    tttgame = session['tttgame'] = TTTGame() 
     player = Player.query.filter_by(id=session['player_id']).first()
     session['player'] = player
     if player.credits < 3 and player.credits > 0:
@@ -17,35 +17,34 @@ def handle_game_start():
         return
     player.credits -= 3
     db.session.commit()
-    emit('move', {'board': game.board, 'player':player.id, 'credits': player.credits }, broadcast=True)
+    emit('move', {'board': tttgame.board, 'player':player.id, 'credits': player.credits }, broadcast=True)
 
 @socketio.on('make_move')
 def handle_make_move(data):
     row = data['row']
     col = data['col']
-    game = session['game']
+    tttgame = session['tttgame']
     player = session['player']
 
-    game.make_move(row, col)
-    emit('move', {'board': game.board, 'game_over': game.game_over, 'winner': game.winner, 'credits': player.credits, 'current_player': game.current_player}, broadcast=True)
+    tttgame.make_move(row, col)
+    emit('move', {'board': tttgame.board, 'game_over': tttgame.game_over, 'winner': tttgame.winner, 'credits': player.credits, 'current_player': tttgame.current_player}, broadcast=True)
 
 @socketio.on('ai_move')
 def handle_ai_move():
-    game = session['game']
+    tttgame = session['tttgame']
     player = session['player']
     time.sleep(0.5)
-    game.make_ai_move()
-    emit('move', {'board': game.board, 'game_over': game.game_over, 'winner': game.winner, 'credits': player.credits, 'current_player': game.current_player}, broadcast=True)
+    tttgame.make_ai_move()
+    emit('move', {'board': tttgame.board, 'game_over': tttgame.game_over, 'winner': tttgame.winner, 'credits': player.credits, 'current_player': tttgame.current_player}, broadcast=True)
 
 @socketio.on('game_over')
 def handle_game_over(data):
     player = Player.query.filter_by(id=session['player_id']).first()
     if data['winner'] == 'X':
         player.credits += 4
-        db.session.commit()
     if data['winner'] == None:
         player.credits += 3
-        db.session.commit()
+    db.session.commit()
     
     emit('result', {'winner': data['winner'], 'credits': player.credits}, broadcast=True)
 
