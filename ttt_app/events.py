@@ -30,12 +30,11 @@ def handle_make_move(data):
 
 @socketio.on('game_over')
 def handle_game_over(data):
+    player = Player.query.filter_by(id=session['player_id']).first()
     if data['winner'] == 'X':
-        player = Player.query.filter_by(id=session['player_id']).first()
         player.credits += 4
         db.session.commit()
     if data['winner'] == None:
-        player = Player.query.filter_by(id=session['player_id']).first()
         player.credits += 3
         db.session.commit()
     
