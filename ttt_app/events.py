@@ -3,6 +3,7 @@ from .extensions import socketio
 from .game_logic import TTTGame
 from .models import Player, db
 from flask_socketio import emit
+import time
 
 
 @socketio.on('game_start')
@@ -24,9 +25,17 @@ def handle_make_move(data):
     col = data['col']
     game = session['game']
     player = session['player']
-    game.make_move(row, col)
 
-    emit('move', {'board': game.board, 'game_over': game.game_over, 'winner': game.winner, 'credits': player.credits}, broadcast=True)
+    game.make_move(row, col)
+    emit('move', {'board': game.board, 'game_over': game.game_over, 'winner': game.winner, 'credits': player.credits, 'current_player': game.current_player}, broadcast=True)
+
+@socketio.on('ai_move')
+def handle_ai_move():
+    game = session['game']
+    player = session['player']
+    time.sleep(0.5)
+    game.make_ai_move()
+    emit('move', {'board': game.board, 'game_over': game.game_over, 'winner': game.winner, 'credits': player.credits, 'current_player': game.current_player}, broadcast=True)
 
 @socketio.on('game_over')
 def handle_game_over(data):

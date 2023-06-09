@@ -1,3 +1,5 @@
+import random
+
 class TTTGame:
     def __init__(self):
         self.board = [[' ' for _ in range(3)] for _ in range(3)]
@@ -39,6 +41,19 @@ class TTTGame:
             self.game_over = True
             return
         
+    def make_ai_move(self):
+        if self.current_player == 'O' and not self.game_over:
+            # Generate a random move for the AI player
+            available_moves = []
+            for row in range(3):
+                for col in range(3):
+                    if self.board[row][col] == ' ':
+                        available_moves.append((row, col))
+
+            if available_moves:
+                row, col = random.choice(available_moves)
+                self.make_move(row, col)
+
     def __str__(self):
         return f'{self.board[0][0]}|{self.board[0][1]}|{self.board[0][2]}\n-----\n{self.board[1][0]}|{self.board[1][1]}|{self.board[1][2]}\n-----\n{self.board[2][0]}|{self.board[2][1]}|{self.board[2][2]}'
     
