@@ -44,7 +44,7 @@
 
     socket.on('move', (data) => {
         playerCreditsElement.innerHTML = data.credits + ' Credits';
-        const board = data.board;
+        var board = data.board;
         var credits = data.credits;
         updateBoard(board);
         console.log(data);
@@ -52,6 +52,9 @@
             isGameOver = true;
             console.log('game over');
             socket.emit('game_over', { 'winner': data.winner });
+        }
+        else if (data.current_player == 'O') {
+            socket.emit('ai_move')
         }
     });
 
