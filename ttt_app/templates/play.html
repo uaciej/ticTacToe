@@ -28,6 +28,8 @@
     var socket = io.connect()
     var isGameOver = false;
 
+    checkSession();
+
     //Buttons
     var playAgainBtn = document.getElementById('playAgainBtn');
     var startNewSessionBtn = document.getElementById('startNewSessionBtn');
@@ -39,9 +41,7 @@
     var playerCreditsElement = document.getElementById('player_credits');
 
 
-    //Socket events
-    socket.emit('game_start');
-
+    // Socket events
     socket.on('move', (data) => {
         playerCreditsElement.innerHTML = data.credits + ' Credits';
         var board = data.board;
@@ -85,6 +85,7 @@
             sessionOverDiv.textContent = 'You won the session!';
             message = '';
             startNewSessionBtn.style.display = 'block'
+            socket.emit('session_won')
         }
         else {
             playAgainBtn.style.display = 'block'
@@ -102,9 +103,12 @@
 
 
     //Functions
-    function addCredits() {
-        socket.emit('add_credits');
-    };
+    function checkSession() {
+        socket.emit('check_session');
+        socket.on('session_exists', (data) => {
+            socket.emit('game_start');
+        });
+    }
 
     function startNewSession() {
         console.log('start new session');
@@ -113,6 +117,7 @@
         startNewSessionBtn.style.display = 'none';
         socket.emit('start_new_session');
     }
+
 
     function updateBoard(board) {
         const boardContainer = document.querySelector('.board');
@@ -135,6 +140,11 @@
             socket.emit('make_move', { row, col });
         }
     }
+
+    function addCredits() {
+        socket.emit('add_credits');
+    };
+
 </script>
 
 </html>
