@@ -6,7 +6,6 @@ from ttt_app import app
 
 @app.route('/')
 def index():
-    print(Session.query.filter_by(player_id=session['player_id']).all())
     if 'player_id' in session and Session.query.filter_by(player_id=session['player_id']).all() == []:
         session['stats_button'] = 'disabled'
     else:
