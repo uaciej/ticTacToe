@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
     <title>Tic Tac Toe</title>
 </head>
 
@@ -14,11 +15,31 @@
         {% if not session.player_id %}
         <button onclick="location.href='/login'">Login</button>
         <button onclick="location.href='/register'">Register</button>
+        <button onclick="showLoginError()">Play</button>
+        <button onclick="showLoginError()">Stats</button>
+        <button onclick="showLoginError()">Logout</button>
+        {% elif session.stats_button == 'disabled' %}
+        <button onclick="location.href='/play'">Play</button>
+        <button onclick="showStatsError()">Stats</button>
+        <button onclick="location.href='/logout'">Logout</button>
         {% else %}
         <button onclick="location.href='/play'">Play</button>
+        <button onclick="location.href='/stats'">Stats</button>
         <button onclick="location.href='/logout'">Logout</button>
         {% endif %}
     </div>
+    <div id="loginError" class="error-message hidden">Please login or register first!</div>
+    <div id="statsError" class="error-message hidden">Play a game first!</div>
 </body>
+<script>
+    function showLoginError() {
+        const errorElement = document.getElementById("loginError");
+        errorElement.classList.remove("hidden");
+    }
+    function showStatsError() {
+        const errorElement = document.getElementById("statsError");
+        errorElement.classList.remove("hidden");
+    }
+</script>
 
 </html>

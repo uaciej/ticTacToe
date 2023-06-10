@@ -6,6 +6,36 @@ body {
     text-align: center;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    list-style-type: none;
+    margin-bottom: 10px;
+}
+
+li p {
+    margin: 0;
+}
+
 .board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -23,6 +53,20 @@ body {
     justify-content: center;
     font-size: 60px;
     cursor: pointer;
+}
+
+.disabled-button {
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+.hidden {
+    display: none;
 }
 
 #message {
