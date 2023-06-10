@@ -122,3 +122,9 @@ def start_new_session():
     player.credits = 10
     db.session.commit()
     handle_game_start()
+
+
+@socketio.on('fetch_stats_data_by_date')
+def fetch_stats_data_by_date(data):
+    stats_data = [dic for dic in session['stats_data'] if dic['session_start_date'] == data['date']]
+    emit('stats_data_by_date', {'stats_data': stats_data}, broadcast=True)
