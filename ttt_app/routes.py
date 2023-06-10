@@ -55,5 +55,5 @@ def play():
         return redirect(url_for('login'))
     if request.method == 'POST':
         pass
-    return render_template('play.html')
+    return render_template('play.html', session=session)
 
