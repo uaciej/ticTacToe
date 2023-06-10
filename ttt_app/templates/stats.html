@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Stats</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <h1>Player Stats</h1>
+    <p>Player: {{ player.name }}</p>
+    <hr>
+
+    <h2>Player Overall Stats</h2>
+    <p>Sessions Played: {{ player_stats.sessions_played }}</p>
+    <p>Games Played: {{ player_stats.games_played }}</p>
+    <p>Session Win Ratio: {{ player_stats.session_win_ratio }}</p>
+    <p>Game Win Ratio: {{ player_stats.game_win_ratio }}</p>
+    <hr>
+
+    <h2>Session Stats</h2>
+    <label for="datePicker">Select a Date:</label>
+    <select id="datePicker" onchange="fetchStatsDataByDate(this.value)">
+        {% for day in days %}
+        <option value="{{ day }}">{{ day }}</option>
+        {% endfor %}
+
+    </select>
+    <table id="sessionStatsTable">
+        <thead>
+            <tr>
+                <th>Session Start Date</th>
+                <th>Session Outcome</th>
+                <th>Number of Games in Session</th>
+                <th>Games</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for session in session_stats %}
+            <tr>
+                <td>{{ session.session_start_date }}</td>
+                <td>{{ session.session_outcome }}</td>
+                <td>{{ session.number_of_games_in_session }}</td>
+                <td>
+                    <ul>
+                        {% for game in session.games %}
+                        <li>
+                            <p>Game Start: {{ game.game_start }}</p>
+                            <p>Game Outcome: {{ game.game_outcome }}</p>
+                            <p>Game Time: {{ game.game_time }}s</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+
+<script>
+    var socket = io.connect()
+
+    socket.on('stats_data_by_date', (data) => {
+        updateSessionStatsTable(data.stats_data);
+    });
+
+    function fetchStatsDataByDate(date) {
+        socket.emit('fetch_stats_data_by_date', { 'date': date });
+    }
+
+    function updateSessionStatsTable(data) {
+        var tableBody = document.querySelector('#sessionStatsTable tbody');
+        tableBody.innerHTML = '';
+
+        data.forEach(session => {
+            var row = document.createElement('tr');
+
+            var sessionStartDate = document.createElement('td');
+            sessionStartDate.textContent = session.session_start_date;
+            row.appendChild(sessionStartDate);
+
+            var sessionOutcome = document.createElement('td');
+            sessionOutcome.textContent = session.session_outcome;
+            row.appendChild(sessionOutcome);
+
+            var numberOfGames = document.createElement('td');
+            numberOfGames.textContent = session.number_of_games_in_session;
+            row.appendChild(numberOfGames);
+
+            var gamesList = document.createElement('td');
+            var gamesUl = document.createElement('ul');
+
+            session.games.forEach(game => {
+                var gameLi = document.createElement('li');
+                var gameStart = document.createElement('p');
+                gameStart.textContent = 'Game Start: ' + game.game_start;
+                gameLi.appendChild(gameStart);
+
+                var gameOutcome = document.createElement('p');
+                gameOutcome.textContent = 'Game Outcome: ' + game.game_outcome;
+                gameLi.appendChild(gameOutcome);
+
+                var gameTime = document.createElement('p');
+                gameTime.textContent = 'Game Time: ' + game.game_time + 's';
+                gameLi.appendChild(gameTime);
+
+                gamesUl.appendChild(gameLi);
+            });
+
+            gamesList.appendChild(gamesUl);
+            row.appendChild(gamesList);
+
+            tableBody.appendChild(row);
+        });
+    }
+</script>
+
+</html>
