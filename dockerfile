@@ -1,23 +1,22 @@
-# Use an official Python runtime as the base image
 FROM python:3.11
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /ttt_app
 
-# Copy the requirements.txt file to the container
-COPY requirements.txt .
+# Install dependencies
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
-# Install the project dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the entire project to the container
+# Copy the application code
 COPY . .
 
-# Set the environment variable for Flask
+# Set the Flask environment variables
 ENV FLASK_APP=app.py
+ENV FLASK_ENV=development
 
-# Expose the port your Flask app will be running on
+# Expose the application port
 EXPOSE 5000
 
-# Run the Flask application
+# Set the default command
 CMD ["flask", "run", "--host=0.0.0.0"]
+
