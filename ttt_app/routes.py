@@ -6,7 +6,8 @@ from ttt_app import app
 
 @app.route('/')
 def index():
-    if 'player_id' in session and Session.query.filter_by(player_id=session['player_id']).all() == []:
+    if 'player_id' in session and (Session.query.filter_by(player_id=session['player_id']).all() == [] or 
+    Player.query.filter_by(id=session['player_id']).first().sessions[0].outcome is None):
         session['stats_button'] = 'disabled'
     else:
         session['stats_button'] = 'enabled'
@@ -67,7 +68,7 @@ def play():
 @app.route('/stats')
 def get_stats_data():
     player = Player.query.filter_by(id=session['player_id']).first()
-    
+    print(player.sessions[-1].games_played)
 
     # Player's overall stats
     sessions_played = len(player.sessions)
@@ -76,8 +77,9 @@ def get_stats_data():
     # If the last session or game is still in progress, don't count it
     if player.sessions[-1].outcome is None:
         sessions_played -= 1
-    if player.sessions[-1].games_played[-1].outcome is None:
-        games_played -= 1
+    if player.sessions[-1].games_played:
+        if player.sessions[-1].games_played[-1].outcome is None:
+            games_played -= 1
     
     session_win_ratio = len(Session.query.filter_by(player_id=player.id, outcome='win').all()) / sessions_played
     game_win_ratio = len(Game.query.join(Session).filter(Session.player_id == player.id, Game.outcome == 'win').all()) / games_played
