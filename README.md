@@ -20,7 +20,7 @@ Win grants you 4 credits.
 
 Tie gives you back 3 credits.
 
-Lose gives you no credits.
+Loss gives you no credits.
 
 
 
